@@ -157,7 +157,6 @@ function startTimer() {
   timerInterval = setInterval(updateTimer, 1000);
 }
 
-
 function updateScreen() {
   const maxLen = getCurrentCodeDigits().length;
   if (!currentInput) {
@@ -179,6 +178,12 @@ function setMessage(text, type = "") {
   message.textContent = text;
   message.className = "message";
   if (type) message.classList.add(type);
+  message.classList.add("show");
+
+  setTimeout(() => {
+    message.classList.remove("show");
+    message.textContent = ""; // Clear the message text
+  }, 10000); // Display message for 15 seconds
 }
 
 function addDigit(value) {
@@ -222,21 +227,36 @@ function checkCode() {
 
   if (currentInput === expected) {
     status[getCurrentSection()][currentEnvelopeIndex] = true;
-    setMessage(`Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 1} unlocked.`, "success");
+    
+    // Determine which message to show
+    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 1} Completed.`;
+    
+    if (currentSectionIndex === 0 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
+      messageText = "FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION";
+    } else if (currentSectionIndex === 1 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
+      messageText = "FINAL EXIT: DEPLOYMENT APPROVAL";
+    } else if (currentSectionIndex === 2 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
+      messageText = "🏁 FINAL APPROVAL MOMENT";
+    }
+    
+    setMessage(messageText, "success");
+
     if (getProgress() >= 100) {
       screen.textContent = "DONE";
       targetLabel.textContent = "All envelopes completed!";
       updateOverview();
       return;
     }
+    // Message displays for 15 seconds, then moveNext happens
     setTimeout(() => {
       moveNext();
-    }, 900);
+    }, 15000);
   } else {
     setMessage("Wrong code. Try again.", "error");
+    // Message displays for 15 seconds, then clearInput happens
     setTimeout(() => {
       clearInput();
-    }, 900);
+    }, 10000);
   }
 }
 
@@ -264,7 +284,12 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-startTimer();
+document.getElementById("start-button").addEventListener("click", () => {
+  document.getElementById("title-page").style.display = "none";
+  document.getElementById("main-content").classList.remove("hidden");
+  startTimer(); // Timer starts only when the START button is clicked
+});
+
 let usedHintCount = 0;
 const hintButtons = document.querySelectorAll(".hint");
 hintButtons.forEach((btn) => {

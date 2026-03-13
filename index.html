@@ -11,6 +11,7 @@
       <h1>Welcome to Project Rescue</h1>
       <p>Identify the real business problem. Build the right solution. Test it before customers do.</p>
       <button id="start-button" class="start-button">Start</button>
+      <button id="fullscreen-toggle" class="fullscreen-toggle">Toggle Fullscreen</button>
     </div>
 
     <div id="main-content" class="hidden">
@@ -71,14 +72,17 @@
 
     <script src="script.js"></script>
     <script>
-      document.getElementById("fullscreen-toggle").addEventListener("click", () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen();
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
+      const fullscreenToggleButtons = document.querySelectorAll("#fullscreen-toggle");
+      fullscreenToggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            }
           }
-        }
+        });
       });
 
       document.getElementById("start-button").addEventListener("click", () => {

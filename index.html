@@ -7,57 +7,85 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header class="page-header">
-      <div class="event-tag-large">SIP & SMILE CAFE</div>
-      <div class="title-large">Project Rescue</div>
-      <div class="sponsor-large">Sponsored by <strong>CGI</strong></div>
-    </header>
-    <main class="container">
-      <div class="cols">
-        <section class="col col-left">
-          <div class="instructions">Identify the real business problem. Build the right solution. Test it before customers do. <br><BR>If you succeed… the café survives. <BR>If you fail… launch crashes.</div>
-        </section>
+    <div id="title-page" class="title-page">
+      <h1>Welcome to Project Rescue</h1>
+      <p>Identify the real business problem. Build the right solution. Test it before customers do.</p>
+      <button id="start-button" class="start-button">Start</button>
+    </div>
 
-        <section class="col col-center">
-          <section class="screen" id="screen">----</section>
-          <div id="input-preview" class="input-preview">Input: </div>
-          <p id="target-label" class="target-label"></p>
+    <div id="main-content" class="hidden">
+      <button id="fullscreen-toggle" class="fullscreen-toggle">Toggle Fullscreen</button>
+      <header class="page-header">
+        <div class="event-tag-large">SIP & SMILE CAFE</div>
+        <div class="title-large">Project Rescue</div>
+        <div class="sponsor-large">Sponsored by <strong>CGI</strong></div>
+      </header>
+      <main class="container">
+        <div class="cols">
+          <section class="col col-left">
+            <div class="instructions">Identify the real business problem. Build the right solution. Test it before customers do. <br><BR>If you succeed… the café survives. <BR>If you fail… launch crashes.</div>
+          </section>
 
-          <div class="keypad">
-            <button class="key" data-key="1">1<br><span class="small">ABC</span></button>
-            <button class="key" data-key="2">2<br><span class="small">DEF</span></button>
-            <button class="key" data-key="3">3<br><span class="small">GHI</span></button>
-            <button class="key" data-key="4">4<br><span class="small">JKL</span></button>
-            <button class="key" data-key="5">5<br><span class="small">MNO</span></button>
-            <button class="key" data-key="6">6<br><span class="small">PQRS</span></button>
-            <button class="key" data-key="7">7<br><span class="small">TUV</span></button>
-            <button class="key" data-key="8">8<br><span class="small">WXYZ</span></button>
-            <button class="key" data-key="9">9<br><span class="small">9</span></button>
-            <button class="key key-wide" id="clear">Clear</button>
-            <button class="key" data-key="0">0<br><span class="small">0</span></button>
-            <button class="key key-wide" id="enter">Enter</button>
-          </div>
+          <section class="col col-center">
+            <section class="screen" id="screen">----</section>
+            <div id="input-preview" class="input-preview">Input: </div>
+            <p id="target-label" class="target-label"></p>
 
-          <div class="message" id="message"></div>
-        </section>
+            <div class="keypad">
+              <button class="key" data-key="1">1<br><span class="small">ABC</span></button>
+              <button class="key" data-key="2">2<br><span class="small">DEF</span></button>
+              <button class="key" data-key="3">3<br><span class="small">GHI</span></button>
+              <button class="key" data-key="4">4<br><span class="small">JKL</span></button>
+              <button class="key" data-key="5">5<br><span class="small">MNO</span></button>
+              <button class="key" data-key="6">6<br><span class="small">PQRS</span></button>
+              <button class="key" data-key="7">7<br><span class="small">TUV</span></button>
+              <button class="key" data-key="8">8<br><span class="small">WXYZ</span></button>
+              <button class="key" data-key="9">9<br><span class="small">9</span></button>
+              <button class="key key-wide" id="clear">Clear</button>
+              <button class="key" data-key="0">0<br><span class="small">0</span></button>
+              <button class="key key-wide" id="enter">Enter</button>
+            </div>
 
-        <section class="col col-right">
-          <h3>Progress</h3>
-          <div id="envelope-overview" class="envelope-overview"></div>
-          <div class="progress-wrap">
-            <div class="progress" id="progress"></div>
-          </div>
-          <div class="hint-box">
-            <h4>Hints (max 2 used)</h4>
-            <button class="hint" data-hint="0">Hint 1</button>
-            <button class="hint" data-hint="1">Hint 2</button>
-          </div>
-        </section>
-      </div>
+            <div class="message" id="message"></div>
+          </section>
 
-      <div id="timer" class="timer">Time left: 05:00</div>
-    </main>
+          <section class="col col-right">
+            <h3>Progress</h3>
+            <div id="envelope-overview" class="envelope-overview"></div>
+            <div class="progress-wrap">
+              <div class="progress" id="progress"></div>
+            </div>
+            <div class="hint-box">
+              <h4>Hints (max 2 used)</h4>
+              <div class="hint-buttons">
+                <button class="hint" data-hint="0">Hint 1</button>
+                <button class="hint" data-hint="1">Hint 2</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div id="timer" class="timer">Time left: 05:00</div>
+      </main>
+    </div>
 
     <script src="script.js"></script>
+    <script>
+      document.getElementById("fullscreen-toggle").addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      });
+
+      document.getElementById("start-button").addEventListener("click", () => {
+        document.getElementById("title-page").style.display = "none";
+        document.getElementById("main-content").classList.remove("hidden");
+        startTimer();
+      });
+    </script>
   </body>
 </html>

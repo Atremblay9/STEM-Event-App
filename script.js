@@ -286,5 +286,17 @@ hintButtons.forEach((btn) => {
   });
 });
 
+// Fullscreen toggle functionality
+const fullscreenToggle = document.getElementById("fullscreen-toggle");
+fullscreenToggle.addEventListener("click", () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+});
+
 updateOverview();
 renderTarget();

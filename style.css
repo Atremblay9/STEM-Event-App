@@ -63,7 +63,7 @@ body {
 
 .event-tag-large {
   color: var(--accent-2);
-  font-size: 1.15rem;
+  font-size: 4rem;
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -84,7 +84,7 @@ body {
 
 .instructions {
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   margin-bottom: 8px;
 }
 
@@ -96,23 +96,34 @@ body {
 }
 
 .hint-box {
-  margin-top: 18px;
   display: flex;
   flex-direction: column;
+  justify-content: left;
+  align-items: left;
+  height: 100%;
+  min-height: 200px;
+}
+
+.hint-buttons {
+  display: flex;
+  justify-content: center;
+  height: 40%;
+  align-items: center;
+  flex-direction: row;
   gap: 10px;
-  min-height: 260px;
-  justify-content: flex-start;
+  margin-top: 0;
 }
 
 .hint {
-  width: 100%;
-  text-align: left;
+  flex: none;
+  width: 50%;
+  height: 100%;
+  padding: 15px;
+  text-align: center;
   border: 1px solid #6f3b86;
   background: #3c1a44;
   color: var(--text);
-  padding: 12px 14px;
   border-radius: 10px;
-  flex: 1;
   cursor: pointer;
 }
 
@@ -373,4 +384,21 @@ p {
   font-size: 1.25rem;
   text-align: center;
   letter-spacing: 0.08em;
+}
+
+.fullscreen-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#main-content.hidden {
+  display: none;
 }

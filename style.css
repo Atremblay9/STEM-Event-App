@@ -116,6 +116,7 @@ body {
 
 .hint {
   flex: none;
+  font-size: 1.5rem;
   width: 50%;
   height: 100%;
   padding: 15px;

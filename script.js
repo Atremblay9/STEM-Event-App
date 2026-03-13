@@ -271,12 +271,10 @@ hintButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     if (btn.classList.contains("used")) return;
     if (usedHintCount >= 2) {
-      setMessage("No more hints available.", "error");
       return;
     }
     btn.classList.add("used");
     usedHintCount += 1;
-    setMessage(`Hint: ${btn.textContent.replace(/^Hint \d:\s*/, "")}`, "success");
     if (usedHintCount >= 2) {
       hintButtons.forEach((h) => {
         if (!h.classList.contains("used")) {

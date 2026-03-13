@@ -97,6 +97,11 @@ body {
 
 .hint-box {
   margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 260px;
+  justify-content: flex-start;
 }
 
 .hint {
@@ -105,9 +110,9 @@ body {
   border: 1px solid #6f3b86;
   background: #3c1a44;
   color: var(--text);
-  padding: 8px 10px;
+  padding: 12px 14px;
   border-radius: 10px;
-  margin-bottom: 8px;
+  flex: 1;
   cursor: pointer;
 }
 

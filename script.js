@@ -33,7 +33,7 @@ let currentSectionIndex = 0;
 let currentEnvelopeIndex = 0;
 let currentInput = "";
 let timerExpired = false;
-let countdownSeconds = 5 * 60; // 5 minutes
+let countdownSeconds = 60 * 60; // 60 minutes
 let timerInterval = null;
 
 const screen = document.getElementById("screen");
@@ -160,6 +160,10 @@ function updateTimer() {
 }
 
 function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+
   timerElement.textContent = `Time left: ${formatTime(countdownSeconds)}`;
   timerInterval = setInterval(updateTimer, 1000);
 }

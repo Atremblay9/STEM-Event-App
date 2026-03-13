@@ -1,7 +1,14 @@
 const envelopes = {
   BA: ["20", "5", "USIOP"],
-  DEV: ["12211", "459", "7012"],
-  QA: ["999", "12345", "2706"],
+  DEV: ["BDEAC", "20", "1110"],
+  QA: ["SPELL", "UHOH", "NOTHX"],
+};
+
+// Facilitator passwords for each section
+const facilitatorPasswords = {
+  BA: "BA2026",
+  DEV: "DEV2026",
+  QA: "QA2026",
 };
 
 const phoneDigits = {
@@ -175,6 +182,7 @@ function updateInputPreview() {
 }
 
 let lastMessageType = ""; // Track the last message type
+let pendingFacilitatorSection = null; // Track which section needs facilitator approval
 
 function setMessage(text, type = "") {
   const modal = document.getElementById("message-modal");
@@ -235,17 +243,18 @@ function checkCode() {
   if (currentInput === expected) {
     status[getCurrentSection()][currentEnvelopeIndex] = true;
     
-    // Determine which message to show
-    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 2} unlocked.`;
+    // Check if this is a final envelope that requires facilitator approval
+    const isFinalEnvelope = currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1;
     
-    if (currentSectionIndex === 0 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION\n\nPlease speak to Facilitators";
-    } else if (currentSectionIndex === 1 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "FINAL EXIT: DEPLOYMENT APPROVAL\n\nPlease speak to Facilitators";
-    } else if (currentSectionIndex === 2 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "🏁 FINAL APPROVAL MOMENT\n\nPlease speak to Facilitators";
+    if (isFinalEnvelope) {
+      // Show facilitator password prompt
+      pendingFacilitatorSection = getCurrentSection();
+      showFacilitatorModal();
+      return;
     }
     
+    // Determine which message to show for regular envelopes
+    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 1} unlocked.`;
     setMessage(messageText, "success");
 
     if (getProgress() >= 100) {
@@ -258,6 +267,84 @@ function checkCode() {
     setMessage("Wrong code. Try again.", "error");
   }
 }
+
+function showFacilitatorModal() {
+  const facilitatorModal = document.getElementById("facilitator-modal");
+  const facilitatorMessage = document.getElementById("facilitator-message");
+  const section = getCurrentSection();
+  
+  facilitatorMessage.textContent = `Complete discussion Envelop for ${section} section completion.`;
+  facilitatorModal.classList.add("show");
+  document.getElementById("facilitator-password").value = "";
+  document.getElementById("facilitator-password").focus();
+}
+
+// Facilitator modal submit button handler
+document.getElementById("facilitator-submit").addEventListener("click", () => {
+  const password = document.getElementById("facilitator-password").value;
+  const section = pendingFacilitatorSection;
+  
+  if (password === facilitatorPasswords[section]) {
+    // Correct password - show success message and proceed
+    document.getElementById("facilitator-modal").classList.remove("show");
+    
+    let messageText = "";
+    if (section === "BA") {
+      messageText = "✓ FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION complete!";
+    } else if (section === "DEV") {
+      messageText = "✓ FINAL EXIT: DEPLOYMENT APPROVAL complete!";
+    } else if (section === "QA") {
+      messageText = "✓ 🏁 FINAL APPROVAL MOMENT complete!";
+    }
+    
+    setMessage(messageText, "success");
+    pendingFacilitatorSection = null;
+    
+    // Check if all sections are complete
+    if (getProgress() >= 100) {
+      setTimeout(() => {
+        const modal = document.getElementById("message-modal");
+        modal.classList.remove("show");
+        document.getElementById("modal-message-text").textContent = "";
+        screen.textContent = "DONE";
+        targetLabel.textContent = "All envelopes completed!";
+        updateOverview();
+      }, 3000);
+    } else {
+      setTimeout(() => {
+        const modal = document.getElementById("message-modal");
+        modal.classList.remove("show");
+        document.getElementById("modal-message-text").textContent = "";
+        moveNext();
+      }, 3000);
+    }
+  } else {
+    // Incorrect password
+    setMessage("Incorrect facilitator password. Please try again.", "error");
+    document.getElementById("facilitator-modal").classList.remove("show");
+    document.getElementById("facilitator-password").value = "";
+  }
+});
+
+// Facilitator modal cancel button handler
+document.getElementById("facilitator-cancel").addEventListener("click", () => {
+  const facilitatorModal = document.getElementById("facilitator-modal");
+  facilitatorModal.classList.remove("show");
+  document.getElementById("facilitator-password").value = "";
+  pendingFacilitatorSection = null;
+  
+  // Revert the completion status since facilitator didn't approve
+  if (pendingFacilitatorSection) {
+    status[pendingFacilitatorSection][currentEnvelopeIndex] = false;
+  }
+});
+
+// Allow Enter key to submit facilitator password
+document.getElementById("facilitator-password").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    document.getElementById("facilitator-submit").click();
+  }
+});
 
 // button hooks
 const buttons = document.querySelectorAll(".key[data-key]");

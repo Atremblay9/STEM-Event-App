@@ -426,3 +426,59 @@ p {
 #main-content.hidden {
   display: none;
 }
+
+.message-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.message-modal.show {
+  display: flex;
+}
+
+.message-modal-content {
+  background: rgba(0, 128, 0, 0.9);
+  color: #fff;
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 600px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.message-modal-content p {
+  font-size: 2rem;
+  margin: 0 0 30px;
+  line-height: 1.4;
+}
+
+.message-modal-content.error {
+  background: rgba(128, 0, 0, 0.9);
+}
+
+.modal-close-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.modal-close-button:active {
+  transform: scale(0.98);
+}

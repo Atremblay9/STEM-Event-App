@@ -174,16 +174,24 @@ function updateInputPreview() {
   inputPreview.textContent = currentInput ? `Input: ${currentInput}` : "Input: (none)";
 }
 
-function setMessage(text, type = "") {
-  message.textContent = text;
-  message.className = "message";
-  if (type) message.classList.add(type);
-  message.classList.add("show");
+let lastMessageType = ""; // Track the last message type
 
-  setTimeout(() => {
-    message.classList.remove("show");
-    message.textContent = ""; // Clear the message text
-  }, 10000); // Display message for 15 seconds
+function setMessage(text, type = "") {
+  const modal = document.getElementById("message-modal");
+  const messageText = document.getElementById("modal-message-text");
+  const content = modal.querySelector(".message-modal-content");
+  
+  messageText.textContent = text;
+  lastMessageType = type;
+  
+  // Reset content classes
+  content.className = "message-modal-content";
+  if (type) {
+    content.classList.add(type);
+  }
+  
+  // Show the modal
+  modal.classList.add("show");
 }
 
 function addDigit(value) {
@@ -198,7 +206,6 @@ function addDigit(value) {
 function clearInput() {
   currentInput = "";
   updateScreen();
-  setMessage("", "");
 }
 
 function moveNext() {
@@ -229,14 +236,14 @@ function checkCode() {
     status[getCurrentSection()][currentEnvelopeIndex] = true;
     
     // Determine which message to show
-    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 1} Completed.`;
+    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 2} unlocked.`;
     
     if (currentSectionIndex === 0 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION";
+      messageText = "FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION\n\nPlease speak to Facilitators";
     } else if (currentSectionIndex === 1 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "FINAL EXIT: DEPLOYMENT APPROVAL";
+      messageText = "FINAL EXIT: DEPLOYMENT APPROVAL\n\nPlease speak to Facilitators";
     } else if (currentSectionIndex === 2 && currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1) {
-      messageText = "🏁 FINAL APPROVAL MOMENT";
+      messageText = "🏁 FINAL APPROVAL MOMENT\n\nPlease speak to Facilitators";
     }
     
     setMessage(messageText, "success");
@@ -247,16 +254,8 @@ function checkCode() {
       updateOverview();
       return;
     }
-    // Message displays for 15 seconds, then moveNext happens
-    setTimeout(() => {
-      moveNext();
-    }, 15000);
   } else {
     setMessage("Wrong code. Try again.", "error");
-    // Message displays for 15 seconds, then clearInput happens
-    setTimeout(() => {
-      clearInput();
-    }, 10000);
   }
 }
 
@@ -320,6 +319,20 @@ fullscreenToggle.addEventListener("click", () => {
     if (document.exitFullscreen) {
       document.exitFullscreen();
     }
+  }
+});
+
+// Modal close button handler
+document.getElementById("modal-close-button").addEventListener("click", () => {
+  const modal = document.getElementById("message-modal");
+  modal.classList.remove("show");
+  document.getElementById("modal-message-text").textContent = "";
+  
+  // Handle next action based on message type
+  if (lastMessageType === "success") {
+    moveNext();
+  } else if (lastMessageType === "error") {
+    clearInput();
   }
 });
 

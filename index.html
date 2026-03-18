@@ -30,10 +30,6 @@
       </header>
       <main class="container">
         <div class="cols">
-          <section class="col col-left">
-            <div class="instructions">Identify the real business problem. Build the right solution. Test it before customers do. <br><BR>If you succeed… the café survives. <BR>If you fail… launch crashes.</div>
-          </section>
-
           <section class="col col-center">
             <section class="screen" id="screen">----</section>
             <div id="input-preview" class="input-preview">Input: </div>
@@ -58,18 +54,8 @@
           </section>
 
           <section class="col col-right">
-            <h3>Progress</h3>
+            <h3>Select Envelope</h3>
             <div id="envelope-overview" class="envelope-overview"></div>
-            <div class="progress-wrap">
-              <div class="progress" id="progress"></div>
-            </div>
-            <div class="hint-box">
-              <h4>Hints (max 2 used)</h4>
-              <div class="hint-buttons">
-                <button class="hint" data-hint="0">💡 Hint 1</button>
-                <button class="hint" data-hint="1">💡 Hint 2</button>
-              </div>
-            </div>
           </section>
         </div>
 
@@ -79,18 +65,6 @@
         <div class="message-modal-content">
           <p id="modal-message-text"></p>
           <button id="modal-close-button" class="modal-close-button">Continue</button>
-        </div>
-      </div>
-
-      <div id="facilitator-modal" class="facilitator-modal hidden">
-        <div class="facilitator-modal-content">
-          <h2>Facilitator Approval Required</h2>
-          <p id="facilitator-message"></p>
-          <input type="password" id="facilitator-password" class="facilitator-password-input" placeholder="Enter facilitator password">
-          <div class="facilitator-buttons">
-            <button id="facilitator-submit" class="facilitator-button">Submit</button>
-            <button id="facilitator-cancel" class="facilitator-button cancel">Cancel</button>
-          </div>
         </div>
       </div>
     </div>

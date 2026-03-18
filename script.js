@@ -23,11 +23,6 @@ const phoneDigits = {
 };
 
 const sectionNames = ["BA", "DEV", "QA"];
-const status = {
-  BA: [false, false, false],
-  DEV: [false, false, false],
-  QA: [false, false, false],
-};
 
 let currentSectionIndex = 0;
 let currentEnvelopeIndex = 0;
@@ -41,7 +36,6 @@ const timerElement = document.getElementById("timer");
 const message = document.getElementById("message");
 const targetLabel = document.getElementById("target-label");
 const overview = document.getElementById("envelope-overview");
-const progressBar = document.getElementById("progress");
 
 function codeToDigits(code) {
   return code
@@ -68,15 +62,6 @@ function getCurrentCodeDigits() {
   return codeToDigits(getCurrentCode());
 }
 
-function getProgress() {
-  const total = 9;
-  let completed = 0;
-  sectionNames.forEach((sec) => {
-    completed += status[sec].filter(Boolean).length;
-  });
-  return (completed / total) * 100;
-}
-
 function updateOverview() {
   overview.innerHTML = "";
   sectionNames.forEach((section) => {
@@ -90,19 +75,14 @@ function updateOverview() {
       const button = document.createElement("button");
       button.className = "envelope-btn";
       button.textContent = `Envelope ${idx + 1}`;
-      if (status[section][idx]) {
-        button.classList.add("completed");
-      } else if (section === getCurrentSection() && idx === currentEnvelopeIndex) {
+      
+      if (section === getCurrentSection() && idx === currentEnvelopeIndex) {
         button.classList.add("active");
-      } else if (isEnvelopeUnlocked(section, idx)) {
-        button.classList.add("unlocked");
       } else {
-        button.disabled = true;
-        button.classList.add("locked");
+        button.classList.add("selectable");
       }
 
       button.addEventListener("click", () => {
-        if (!isEnvelopeUnlocked(section, idx)) return;
         currentSectionIndex = sectionNames.indexOf(section);
         currentEnvelopeIndex = idx;
         clearInput();
@@ -116,24 +96,12 @@ function updateOverview() {
   });
 }
 
-function isEnvelopeUnlocked(section, idx) {
-  if (status[section][idx]) return true;
-
-  const sectionIndex = sectionNames.indexOf(section);
-
-  if (sectionIndex < currentSectionIndex) return true;
-  if (sectionIndex > currentSectionIndex) return false;
-
-  return idx <= currentEnvelopeIndex;
-}
-
 function renderTarget() {
   const section = getCurrentSection();
   const env = currentEnvelopeIndex + 1;
   targetLabel.textContent = `Current: ${section} Envelope ${env}`;
   updateScreen();
   updateInputPreview();
-  progressBar.style.width = `${getProgress()}%`;
 }
 
 function formatTime(seconds) {
@@ -185,16 +153,12 @@ function updateInputPreview() {
   inputPreview.textContent = currentInput ? `Input: ${currentInput}` : "Input: (none)";
 }
 
-let lastMessageType = ""; // Track the last message type
-let pendingFacilitatorSection = null; // Track which section needs facilitator approval
-
 function setMessage(text, type = "") {
   const modal = document.getElementById("message-modal");
   const messageText = document.getElementById("modal-message-text");
   const content = modal.querySelector(".message-modal-content");
   
   messageText.textContent = text;
-  lastMessageType = type;
   
   // Reset content classes
   content.className = "message-modal-content";
@@ -220,18 +184,6 @@ function clearInput() {
   updateScreen();
 }
 
-function moveNext() {
-  if (currentEnvelopeIndex < envelopes[getCurrentSection()].length - 1) {
-    currentEnvelopeIndex += 1;
-  } else if (currentSectionIndex < sectionNames.length - 1) {
-    currentSectionIndex += 1;
-    currentEnvelopeIndex = 0;
-  }
-  clearInput();
-  renderTarget();
-  updateOverview();
-}
-
 function checkCode() {
   if (timerExpired) {
     setMessage("Timer expired. No more entries accepted.", "error");
@@ -245,110 +197,14 @@ function checkCode() {
   }
 
   if (currentInput === expected) {
-    status[getCurrentSection()][currentEnvelopeIndex] = true;
-    
-    // Check if this is a final envelope that requires facilitator approval
-    const isFinalEnvelope = currentEnvelopeIndex === envelopes[getCurrentSection()].length - 1;
-    
-    if (isFinalEnvelope) {
-      // Show facilitator password prompt
-      pendingFacilitatorSection = getCurrentSection();
-      showFacilitatorModal();
-      return;
-    }
-    
-    // Determine which message to show for regular envelopes
-    let messageText = `Correct! ${getCurrentSection()} Envelope ${currentEnvelopeIndex + 1} unlocked.`;
-    setMessage(messageText, "success");
-
-    if (getProgress() >= 100) {
-      screen.textContent = "DONE";
-      targetLabel.textContent = "All envelopes completed!";
-      updateOverview();
-      return;
-    }
+    const section = getCurrentSection();
+    const env = currentEnvelopeIndex + 1;
+    setMessage(`✓ ${section} Envelope ${env} correct!`, "success");
+    clearInput();
   } else {
     setMessage("Wrong code. Try again.", "error");
   }
 }
-
-function showFacilitatorModal() {
-  const facilitatorModal = document.getElementById("facilitator-modal");
-  const facilitatorMessage = document.getElementById("facilitator-message");
-  const section = getCurrentSection();
-  
-  facilitatorMessage.textContent = `Complete discussion Envelop for ${section} section completion.`;
-  facilitatorModal.classList.add("show");
-  document.getElementById("facilitator-password").value = "";
-  document.getElementById("facilitator-password").focus();
-}
-
-// Facilitator modal submit button handler
-document.getElementById("facilitator-submit").addEventListener("click", () => {
-  const password = document.getElementById("facilitator-password").value;
-  const section = pendingFacilitatorSection;
-  
-  if (password === facilitatorPasswords[section]) {
-    // Correct password - show success message and proceed
-    document.getElementById("facilitator-modal").classList.remove("show");
-    
-    let messageText = "";
-    if (section === "BA") {
-      messageText = "✓ FINAL EXIT ENVELOPE: BUSINESS RECOMMENDATION complete!";
-    } else if (section === "DEV") {
-      messageText = "✓ FINAL EXIT: DEPLOYMENT APPROVAL complete!";
-    } else if (section === "QA") {
-      messageText = "✓ 🏁 FINAL APPROVAL MOMENT complete!";
-    }
-    
-    setMessage(messageText, "success");
-    pendingFacilitatorSection = null;
-    
-    // Check if all sections are complete
-    if (getProgress() >= 100) {
-      setTimeout(() => {
-        const modal = document.getElementById("message-modal");
-        modal.classList.remove("show");
-        document.getElementById("modal-message-text").textContent = "";
-        screen.textContent = "DONE";
-        targetLabel.textContent = "All envelopes completed!";
-        updateOverview();
-      }, 3000);
-    } else {
-      setTimeout(() => {
-        const modal = document.getElementById("message-modal");
-        modal.classList.remove("show");
-        document.getElementById("modal-message-text").textContent = "";
-        moveNext();
-      }, 3000);
-    }
-  } else {
-    // Incorrect password
-    setMessage("Incorrect facilitator password. Please try again.", "error");
-    document.getElementById("facilitator-modal").classList.remove("show");
-    document.getElementById("facilitator-password").value = "";
-  }
-});
-
-// Facilitator modal cancel button handler
-document.getElementById("facilitator-cancel").addEventListener("click", () => {
-  const facilitatorModal = document.getElementById("facilitator-modal");
-  facilitatorModal.classList.remove("show");
-  document.getElementById("facilitator-password").value = "";
-  pendingFacilitatorSection = null;
-  
-  // Revert the completion status since facilitator didn't approve
-  if (pendingFacilitatorSection) {
-    status[pendingFacilitatorSection][currentEnvelopeIndex] = false;
-  }
-});
-
-// Allow Enter key to submit facilitator password
-document.getElementById("facilitator-password").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    document.getElementById("facilitator-submit").click();
-  }
-});
 
 // button hooks
 const buttons = document.querySelectorAll(".key[data-key]");
@@ -418,13 +274,6 @@ document.getElementById("modal-close-button").addEventListener("click", () => {
   const modal = document.getElementById("message-modal");
   modal.classList.remove("show");
   document.getElementById("modal-message-text").textContent = "";
-  
-  // Handle next action based on message type
-  if (lastMessageType === "success") {
-    moveNext();
-  } else if (lastMessageType === "error") {
-    clearInput();
-  }
 });
 
 updateOverview();
